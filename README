@@ -1,0 +1,146 @@
+README for Bare Bones interpreter
+$Id: README 15 2008-02-19 19:35:02Z eric $
+Copyright 2008 Eric Smith <eric@brouhaha.com>
+
+BareBones is an interpreter for the "Bare Bones" programming language
+defined in Chapter 11 of _Computer Science: An Overview_, 9th Edition,
+by J. Glenn Brookshear.
+
+-----------------------------------------------------------------------------
+Bare Bones Language:
+
+Comments
+
+    In this implementation, a '#' character introduces a comment, which
+    continues to the end of the source line.
+
+Reserved words:
+
+    The words in the following list are reserved, and may not be used as
+    identifiers:
+
+        clear
+        copy
+        decr
+        do
+        end
+        incr
+        init
+        not
+        to
+        while
+
+    Reserved words are case-insensitive.
+
+Identifiers:
+
+    Identifiers must begin with an alphabetic character, and may
+    contain alphabetic, numeric, and underscore characters.  Identifiers
+    are case-insensitive, thus "FOO", "Foo", and "foo" are the same
+    identifier.  Reserved words my not be used as identifiers.
+
+Variables:
+
+    In Bare Bones, variables are named by an identifier and may contain
+    any arbitrarily large non-negative integer values.  This
+    implementation is currently limited to the size of the host
+    C compiler's uintmax_t type, which typically is 2^64-1.
+
+I/O:
+
+    Bare Bones does not provide any I/O facilities.  Input may be
+    accomplished by initializing variables before program execution
+    using either command-line options or an initialization section,
+    or by using the "clear" and "incr" statements in the program.
+
+    Output consists of the state of variables when the program halts.
+    This implementation will print the variable names and contents
+    to standard output.
+
+Statements:
+
+    clear <var>;            # Set the variable to zero.
+
+    incr <var>;             # Increment the value of the variable.
+
+    decr <var>;             # Decrement the value of the variable,
+                            # except that if the value was already zero,
+                            # it remains zero.
+
+    while <var> not 0 do;   # Loop while the variable's value is not zero.
+      <statements>          # may contain one or more statements, including
+    end;                    # nested while loops.  If the statements do not
+                            # alter the value of the loop variable, the loop
+                            # will never terminate.
+
+    copy <var> to <var>;    # Copy one variable to another, preserving
+                            # value of original.
+
+-----------------------------------------------------------------------------
+Language extensions:
+
+One extension is added to the language as defined in the book.
+At the beginning of a Bare Bones source file, prior to the program
+proper, there may be an initialization section, in which variables may
+be initialized to non-negative integer values:
+
+	init X = 37;
+
+-----------------------------------------------------------------------------
+Usage:
+
+BareBones should be invoked from the command line with the name of
+the source file given as an argument:
+
+	barebones prog1.bb
+
+Optionally, additional command line arguments may be used to initialize
+variables:
+
+	barebones X=37 Y=116 prog1.bb
+
+By default, variables that are not initialized explicitly will be
+implicitly initialized to zero.  If the "-u" option is given on the
+command line, this initialization is suppressed, and any reference to
+an uninitialized variable, other than in a clear statement, will result
+in a run time error.
+
+Before the program is interpreted, the initial values of all variables
+will be printed to standard output.  After successful completion of
+the interpreter, the final values will be printed.
+
+The "-O" command line option enables optimization of the program.
+Currently only one type of optimization is performed.  A common idiom in
+Bare Bones programs is to use a while loop to add one variable to another,
+clearing the first in the process.  The optimizer will recognize this
+idiom and implement a direct solution, replacing the standard iterative
+interpretation of the while loop.
+
+-----------------------------------------------------------------------------
+Bare Bones Sample Programs:
+
+Two sample Bare Bones programs are provided in the "examples" subdirectory.
+fibonacci.bb will compute the Nth number in the Fibonacci sequences.
+factorial.bb will compute the factorial of a (small) positive integer.
+
+For example, to compute six factorial:
+
+	barebones N=6 examples/factorial.bb
+
+-----------------------------------------------------------------------------
+License:
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License version 3 as
+published by the Free Software Foundation.  Note that I am not
+granting permission to redistribute or modify this program under the
+terms of any other version of the General Public License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program (in the file "COPYING"); if not, see
+<http:#www.gnu.org/licenses/>.
